@@ -1,3 +1,5 @@
+// copied from https://stackoverflow.com/questions/18815489/cuda-tiled-matrix-matrix-multiplication-with-shared-memory-and-matrix-size-whic
+
 #define TILE_DIM 32
 
 __global__ void MatMul(float* A, float* B, float* C, int ARows, int ACols, int BRows,
