@@ -1,36 +1,32 @@
-// copied from https://developer.nvidia.com/blog/efficient-matrix-transpose-cuda-cc/
+// copied from https://github.com/JonathanWatkins/CUDA/blob/master/NvidiaCourse/Exercises/transpose/transpose.cu
 
-#define TILE_DIM 32
-#define BLOCK_ROWS 8
+#define BLOCK_DIM 32
 
 
-__global__ void transposeCoalesced(float *odata, const float *idata)
+__global__ void transpose(float *odata, float *idata, int width, int height)
 {
-  __shared__ float tile[TILE_DIM][TILE_DIM];
+	__shared__ float block[BLOCK_DIM][BLOCK_DIM+1];
+	
+	// read the matrix tile into shared memory
+        // load one element per thread from device memory (idata) and store it
+        // in transposed order in block[][]
+	unsigned int xIndex = blockIdx.x * BLOCK_DIM + threadIdx.x;
+	unsigned int yIndex = blockIdx.y * BLOCK_DIM + threadIdx.y;
+	if((xIndex < width) && (yIndex < height))
+	{
+		unsigned int index_in = yIndex * width + xIndex;
+		block[threadIdx.y][threadIdx.x] = idata[index_in];
+	}
 
-  int x = blockIdx.x * TILE_DIM + threadIdx.x;
-  int y = blockIdx.y * TILE_DIM + threadIdx.y;
-  int width = gridDim.x * TILE_DIM;
+        // synchronise to ensure all writes to block[][] have completed
+	__syncthreads();
 
-  for (int j = 0; j < TILE_DIM; j += BLOCK_ROWS)
-     tile[threadIdx.y+j][threadIdx.x] = idata[(y+j)*width + x];
-
-  __syncthreads();
-
-  x = blockIdx.y * TILE_DIM + threadIdx.x;  // transpose block offset
-  y = blockIdx.x * TILE_DIM + threadIdx.y;
-
-  for (int j = 0; j < TILE_DIM; j += BLOCK_ROWS)
-     odata[(y+j)*width + x] = tile[threadIdx.x][threadIdx.y + j];
-}
-
-
-__global__ void transposeNaive(float *odata, const float *idata)
-{
-  int x = blockIdx.x * TILE_DIM + threadIdx.x;
-  int y = blockIdx.y * TILE_DIM + threadIdx.y;
-  int width = gridDim.x * TILE_DIM;
-
-  for (int j = 0; j < TILE_DIM; j+= BLOCK_ROWS)
-    odata[x*width + (y+j)] = idata[(y+j)*width + x];
+	// write the transposed matrix tile to global memory (odata) in linear order
+	xIndex = blockIdx.y * BLOCK_DIM + threadIdx.x;
+	yIndex = blockIdx.x * BLOCK_DIM + threadIdx.y;
+	if((xIndex < height) && (yIndex < width))
+	{
+		unsigned int index_out = yIndex * height + xIndex;
+		odata[index_out] = block[threadIdx.x][threadIdx.y];
+	}
 }
