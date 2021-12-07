@@ -50,7 +50,7 @@ __global__ void MatEleDivide(float* A, float* B, float *C, int height, int width
     }
 }
 
-__global__ void MatEleAdd2(float* A, float B, int height, int width){
+__global__ void MatEleAddInPlace(float* A, float B, int height, int width){
     int x = threadIdx.x + blockDim.x * blockIdx.x;
     int y = threadIdx.y + blockDim.y * blockIdx.y;
     
@@ -60,7 +60,7 @@ __global__ void MatEleAdd2(float* A, float B, int height, int width){
     }
 }
 
-__global__ void MatEleMul2(float* A, float* B, int height, int width){
+__global__ void MatEleMulInPlace(float* A, float* B, int height, int width){
     int x = threadIdx.x + blockDim.x * blockIdx.x;
     int y = threadIdx.y + blockDim.y * blockIdx.y;
     
@@ -70,7 +70,7 @@ __global__ void MatEleMul2(float* A, float* B, int height, int width){
     }
 }
 
-__global__ void MatEleDivide2(float* A, float* B, int height, int width){
+__global__ void MatEleDivideInPlace(float* A, float* B, int height, int width){
     int x = threadIdx.x + blockDim.x * blockIdx.x;
     int y = threadIdx.y + blockDim.y * blockIdx.y;
     
