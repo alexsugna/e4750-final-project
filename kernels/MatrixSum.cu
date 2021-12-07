@@ -1,3 +1,4 @@
+
 #define SECTION_SIZE 32
 
 __global__ void workInefficientPrefixSum(float *input, float *output, float *S, int length){
