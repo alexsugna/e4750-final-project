@@ -112,7 +112,7 @@ class cudaNMF:
 
         return c #, time_
     
-    def NMF(self, X, N, M, K):
+    def NMF(self, X, N, M, K, W, H):
 
         ACols = a.shape[1] #get number of columns of input A
         ARows = a.shape[0] #get number of rows of input A
@@ -123,11 +123,12 @@ class cudaNMF:
         func_tran = self.mod.get_function("MatTran") #matrix transpose
         func_add = self.mod.get_function("MatEleAdd2") #matrix elementwise addition
         func_div = self.mod.get_function("MatEleDivide2") #matrix elementwise division
-
-        # Device memory allocation for input and output array(s)
-        W = np.float32(np.random.uniform(1, 2, (N, K))) #initialize W and H to random values between 1 and 2
-        H = np.float32(np.random.uniform(1, 2, (K, M)))
         
+        # Event objects to mark start and end points
+        g_start = cuda.Event()
+        g_end = cuda.Event()
+        g_start.record()
+
         #define X, W, and H on gpu
         X_d = gpuarray.to_gpu(X)
         W_d = gpuarray.to_gpu(W)
@@ -224,9 +225,10 @@ class cudaNMF:
         H = H_d.get()
         W = W_d.get()
 
-        # Convert output array back to string
+        g_end.record()
+        g_end.synchronize()
 
-        return H,W #, time_
+        return H,W,g_start.time_till(g_end)*1e-3
 
 
 if __name__ == "__main__":
@@ -262,7 +264,7 @@ if __name__ == "__main__":
     X = np.zeros((N, M)) #define the original data matrix
 
     #load data, every row is a single document
-    #format “idx:cnt” with commas separating each unique word in the document
+    #format "idx:cnt" with commas separating each unique word in the document
     for column in range(M):
         row = data.iloc[column].values[0].split(',')
         for item in row:
@@ -271,10 +273,16 @@ if __name__ == "__main__":
     
     K = 25
 
+    # Device memory allocation for input and output array(s)
+    W = np.float32(np.random.uniform(1, 2, (N, K))) #initialize W and H to random values between 1 and 2
+    H = np.float32(np.random.uniform(1, 2, (K, M)))
+
+    #parallel implementation***************************************************************************
     #call NMF function
-    H,W = test.NMF(np.float32(X), N, M, K)
+    H,W,time = test.NMF(np.float32(X), N, M, K, np.float32(W), np.float32(H))
 
     W = W / W.sum(axis=0).reshape(1,-1) #normalize the 25 categories
+    W1 = W
 
     #find the 10 most used words for each category and print
     data = pd.DataFrame(index=range(10), columns=['Topic_%d' % i for i in range(1, 26)])
@@ -286,4 +294,42 @@ if __name__ == "__main__":
         dt = dt.sort_values(by='weight', ascending=False)[:10].reset_index(drop=True)
         data[column] = dt['weight'].map(lambda x: ('%.4f')%x) + ' ' + dt['words']
     print(data)
-        
+
+    #numpy implementation******************************************************************************
+    iteration = 100
+    err = 1e-16 #a small error to prevent 0/0
+
+    start = timer.time() #record start time
+
+    for i in range(1, iteration+1):
+        if i % 10 == 0:
+            print('iteration %d' % i)
+            
+        Wt = W.T.astype(np.float32) #w transpose
+        H = H * Wt.dot(X) / (Wt.dot(W).dot(H) + err) #update H
+
+        Ht = H.T.astype(np.float32) #H transpose
+        W = W * X.dot(Ht) / (W.dot(H).dot(Ht) + err) #update W
+
+    end = timer.time() #record end time
+    
+    W = W / W.sum(axis=0).reshape(1,-1) #normalize the 25 categories
+    
+    #find the 10 most used words for each category and print
+    data = pd.DataFrame(index=range(10), columns=['Topic_%d' % i for i in range(1, 26)])
+    for i in range(25):
+        column = 'Topic_' + str(i+1)
+        Wi = W[:, i]
+        dt = pd.DataFrame(Wi, columns=['weight'])
+        dt['words'] = vocab
+        dt = dt.sort_values(by='weight', ascending=False)[:10].reset_index(drop=True)
+        data[column] = dt['weight'].map(lambda x: ('%.4f')%x) + ' ' + dt['words']
+    print(data)
+
+    if((W == W1).all()):
+        print("W test case passed")
+
+    print("python serial time:")
+    print(end-start)
+    print("cuda parallel time:")
+    print(time)
