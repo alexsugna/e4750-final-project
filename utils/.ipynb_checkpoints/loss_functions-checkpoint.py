@@ -2,13 +2,16 @@
 Parallel implementations of loss functions for NMF
 """
 import numpy as np
+import time
 
 from .parallel_operations import matrix_multiplication, matrix_subtract, matrix_square, matrix_sum
 
-def euclidean_loss(X, W, H, compare_to_numpy=False):
+def euclidean_loss(X, W, H, compare_to_numpy=False, return_time=False):
     """
     sum((X - WH)^2)
     """
+    if return_time:
+        start = time.time()
     
     # compute WH
     WH = matrix_multiplication(W, H)
@@ -33,9 +36,30 @@ def euclidean_loss(X, W, H, compare_to_numpy=False):
     result = matrix_sum(X_minus_WH_squared)
     
     if compare_to_numpy:
-            print("sum((X - WH)^2) matches NumPy: ", np.allclose(result, np.sum(np.square(X - np.matmul(W, H)))))        
+            print("sum((X - WH)^2) matches NumPy: ", np.allclose(result, np.sum(np.square(X - np.matmul(W, H)))))      
+            
+    if return_time:
+        end = time.time()
+        return result, (end-start)*1e3
     
     return result
+
+
+def euclidean_loss_numpy(X, W, H, return_time=False):
+    if return_time:
+        start = time.time()
+    loss = np.sum(np.square(X - np.matmul(W, H)))
+    
+    if return_time:
+        end = time.time()
+        return loss, (end - start)*1e3
+    
+    return loss
+    
+    
+
+
+
     
     
     

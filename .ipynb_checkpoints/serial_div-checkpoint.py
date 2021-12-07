@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 
 data_path = 'nyt_data.txt'
 vocab_path = 'nyt_vocab.dat'
@@ -24,39 +23,32 @@ err = 1e-16 #a small error to prevent 0/0
 iteration = 100 #number of iterations
 K = 25 #number of categories (matrix rank)
 
-np.random.seed(0)
-
 W = np.random.uniform(1, 2, (N, K)) #initialize W and H to random values between 1 and 2
 H = np.random.uniform(1, 2, (K, M))
 
-squared_out = [] #keep track of objective function for each iteration
-
-start = time.time()
+divergence_out = [] #keep track of objective function for each iteration
 for i in range(1, iteration+1):
     if i % 10 == 0:
         print('iteration %d' % i)
-        
-    Wt = W.T #w transpose
-    H = H * Wt.dot(X) / (Wt.dot(W).dot(H) + err) #update H
-
-    Ht = H.T #H transpose
-    W = W * X.dot(Ht) / (W.dot(H).dot(Ht) + err) #update W
-
-    #squared error objective function
-    squared_out.append(np.matrix(np.square(X - (W.dot(H)))).sum())
-    
-end = time.time()
-print("Trained in {} s".format(end - start))
+    P = X / (W.dot(H)+err) #intermediate step (purple matrix in notes)
+    Wt = W.T
+    Wt = Wt / Wt.sum(axis=1).reshape(-1, 1) #normalize rows
+    H = H * (Wt.dot(P))  #update H
+    P = X / (W.dot(H)+err)
+    Ht = H.T
+    Ht = Ht / Ht.sum(axis=0).reshape(1, -1) #normalize columns
+    W = W * (P.dot(Ht))  #update W
+    divergence_out.append(np.sum(-X * np.log(W.dot(H)+err) + W.dot(H)))
 
 #plot the objective function, should monotonically decrease to a local minimum
 fig = plt.figure()
-plt.plot(np.arange(1, 101), squared_out, label='squared error objective function')
+plt.plot(np.arange(1, 101), divergence_out, label='divergence objective function')
 plt.grid()
 plt.legend()
 plt.ylabel('value')
 plt.xlabel('iteration')
-plt.title('Squared error NMF')
-plt.savefig('test_squared_error.png')
+plt.title('Divergence NMF')
+plt.savefig('test_divergence.png')
 
 W = W / W.sum(axis=0).reshape(1,-1) #normalize the 25 categories
 

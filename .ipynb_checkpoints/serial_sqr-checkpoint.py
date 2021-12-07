@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 data_path = 'nyt_data.txt'
 vocab_path = 'nyt_vocab.dat'
@@ -23,10 +24,14 @@ err = 1e-16 #a small error to prevent 0/0
 iteration = 100 #number of iterations
 K = 25 #number of categories (matrix rank)
 
+np.random.seed(0)
+
 W = np.random.uniform(1, 2, (N, K)) #initialize W and H to random values between 1 and 2
 H = np.random.uniform(1, 2, (K, M))
 
 squared_out = [] #keep track of objective function for each iteration
+
+start = time.time()
 for i in range(1, iteration+1):
     if i % 10 == 0:
         print('iteration %d' % i)
@@ -39,6 +44,9 @@ for i in range(1, iteration+1):
 
     #squared error objective function
     squared_out.append(np.matrix(np.square(X - (W.dot(H)))).sum())
+    
+end = time.time()
+print("Trained in {} s".format(end - start))
 
 #plot the objective function, should monotonically decrease to a local minimum
 fig = plt.figure()
