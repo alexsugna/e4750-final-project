@@ -1,7 +1,7 @@
 import numpy as np
 import pycuda.gpuarray as gpuarray
 
-from utils.context import Context
+from context import Context
 
 BLOCK_SIZE = 32
 context = Context(BLOCK_SIZE)

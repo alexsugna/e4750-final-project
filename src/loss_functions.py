@@ -2,9 +2,10 @@
 Parallel implementations of loss functions for NMF
 """
 import numpy as np
+import cupy as cp
 import time
 
-from .parallel_operations import matrix_multiplication, matrix_subtract, matrix_square, matrix_sum
+from parallel_operations import matrix_multiplication, matrix_subtract, matrix_square, matrix_sum
 
 def euclidean_loss(X, W, H, compare_to_numpy=False, return_time=False):
     """
@@ -48,7 +49,38 @@ def euclidean_loss(X, W, H, compare_to_numpy=False, return_time=False):
 def euclidean_loss_numpy(X, W, H, return_time=False):
     if return_time:
         start = time.time()
-    loss = np.sum(np.square(X - np.matmul(W, H)))
+        
+    loss = np.matrix(np.square(X - (W.dot(H)))).sum()
+    
+    if return_time:
+        end = time.time()
+        return loss, (end - start)*1e3
+    
+    return loss
+
+
+def euclidean_loss_cupy(X, W, H, compare_to_numpy=False, return_time=False):
+    if return_time:
+        start = time.time()
+        
+    X = cp.array(X)
+    W = cp.array(W)
+    H = cp.array(H)
+    
+    loss = cp.sum(cp.square(X - cp.matmul(W, H)))
+    
+    if return_time:
+        end = time.time()
+        return loss, (end - start)*1e3
+    
+    return loss
+
+
+def divergence_loss_numpy(X, W, H, eps, return_time=False):
+    if return_time:
+        start = time.time()
+        
+    loss = np.sum(-X * np.log(W.dot(H)+eps) + W.dot(H))
     
     if return_time:
         end = time.time()
