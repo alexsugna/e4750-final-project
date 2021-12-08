@@ -114,15 +114,15 @@ class cudaNMF:
     
     def NMF(self, X, N, M, K, W, H):
 
-        ACols = a.shape[1] #get number of columns of input A
-        ARows = a.shape[0] #get number of rows of input A
+        #ACols = a.shape[1] #get number of columns of input A
+        #ARows = a.shape[0] #get number of rows of input A
         
         # Get kernel function
         func_mul = self.mod.get_function("MatMul") #matrix multiplication
-        func_ele_mul = self.mod.get_function("MatEleMul2") #matrix multiplication elementwise
+        func_ele_mul = self.mod.get_function("MatEleMulInPlace") #matrix multiplication elementwise
         func_tran = self.mod.get_function("MatTran") #matrix transpose
-        func_add = self.mod.get_function("MatEleAdd2") #matrix elementwise addition
-        func_div = self.mod.get_function("MatEleDivide2") #matrix elementwise division
+        func_add = self.mod.get_function("MatEleAddInPlace") #matrix elementwise addition
+        func_div = self.mod.get_function("MatEleDivideInPlace") #matrix elementwise division
         
         # Event objects to mark start and end points
         g_start = cuda.Event()
@@ -147,9 +147,11 @@ class cudaNMF:
         XHt_d = gpuarray.zeros(((N,K)), dtype=np.float32)
 
         #get block dim and grid dim
-        block_dim, grid_dim = self.getGridDimention(N,M)
+        
         err = 1e-16 #a small error to prevent 0/0
         iteration = 100 #number of iterations
+        
+        
 
         # Record execution time and execute operation.
         for i in range(1, iteration+1):
@@ -161,66 +163,80 @@ class cudaNMF:
             #H = H * Wt.dot(X) / (Wt.dot(W).dot(H) + err)
 
             #Wt = W.T
+            block_dim, grid_dim = self.getGridDimention(K,N)
             event = func_tran(W_d, Wt_d, np.int32(K), np.int32(N), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #Wt * X = WtX
+            block_dim, grid_dim = self.getGridDimention(K,M)
             event = func_mul(Wt_d, X_d, WtX_d, np.int32(K), np.int32(N), np.int32(N), np.int32(M), np.int32(K), np.int32(M), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize() #<--maybe remove
 
             #Wt * W = WtW
+            block_dim, grid_dim = self.getGridDimention(K,K)
             event = func_mul(Wt_d, W_d, WtW_d, np.int32(K), np.int32(N), np.int32(N), np.int32(K), np.int32(K), np.int32(K), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #WtW * H = WtWH
+            block_dim, grid_dim = self.getGridDimention(K,M)
             event = func_mul(WtW_d, H_d, WtWH_d, np.int32(K), np.int32(K), np.int32(K), np.int32(M), np.int32(K), np.int32(M), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #WtWH + err
+            block_dim, grid_dim = self.getGridDimention(K,M)
             event = func_add(WtWH_d, np.float32(err), np.int32(K), np.int32(M), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #H .* WtX elementwise
+            block_dim, grid_dim = self.getGridDimention(K,M)
             event = func_ele_mul(H_d, WtX_d, np.int32(K), np.int32(M), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #H / WtWH elementwise
+            block_dim, grid_dim = self.getGridDimention(K,M)
             event = func_div(H_d, WtWH_d, np.int32(K), np.int32(M), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #W UPDATE*******************************************************************************************
 
             #Ht = H.T #H transpose
+            block_dim, grid_dim = self.getGridDimention(K,M)
             event = func_tran(H_d, Ht_d, np.int32(M), np.int32(K), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #X * Ht = XHt
+            block_dim, grid_dim = self.getGridDimention(N,K)
             event = func_mul(X_d, Ht_d, XHt_d, np.int32(N), np.int32(M), np.int32(M), np.int32(K), np.int32(N), np.int32(K), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()            
 
             #W * H = WH
+            block_dim, grid_dim = self.getGridDimention(N,M)
             event = func_mul(W_d, H_d, WH_d, np.int32(N), np.int32(K), np.int32(K), np.int32(M), np.int32(N), np.int32(M), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #WH * Ht = WHHt
+            block_dim, grid_dim = self.getGridDimention(N,K)
             event = func_mul(WH_d, Ht_d, WHHt_d, np.int32(N), np.int32(M), np.int32(M), np.int32(K), np.int32(N), np.int32(K), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #WHHt + err
+            block_dim, grid_dim = self.getGridDimention(N,K)
             event = func_add(WHHt_d, np.float32(err), np.int32(N), np.int32(K), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #W .* XHt elementwise
+            block_dim, grid_dim = self.getGridDimention(N,K)
             event = func_ele_mul(W_d, XHt_d, np.int32(N), np.int32(K), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #W / WHHt elementwise
+            block_dim, grid_dim = self.getGridDimention(N,K)
             event = func_div(W_d, WHHt_d, np.int32(N), np.int32(K), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
             #W = W * X.dot(Ht) / (W.dot(H).dot(Ht) + err) #update W
         
-
+        #g_end.record()
         # Fetch result from device to host
         H = H_d.get()
         W = W_d.get()
