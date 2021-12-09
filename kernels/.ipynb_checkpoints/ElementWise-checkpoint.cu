@@ -79,3 +79,13 @@ __global__ void MatEleDivideInPlace(float* A, float* B, int height, int width){
         A[index] = A[index] / B[index];
     }
 }
+
+__global__ void MatEleSubtractInPlace(float* A, float* B, int height, int width){
+    int x = threadIdx.x + blockDim.x * blockIdx.x;
+    int y = threadIdx.y + blockDim.y * blockIdx.y;
+    
+    if(x < width && y < height){
+        int index = y * width + x;
+        A[index] = A[index] - B[index];
+    }
+}

@@ -4,44 +4,33 @@ Parallel implementations of loss functions for NMF
 import numpy as np
 import cupy as cp
 import time
+from pycuda import gpuarray
+import pycuda.driver as cuda
 
-from parallel_operations import matrix_multiplication, matrix_subtract, matrix_square, matrix_sum
 
-def euclidean_loss(X, W, H, compare_to_numpy=False, return_time=False):
+from .parallel_operations import matrix_multiplication, matrix_subtract, matrix_square, matrix_sum
+
+def euclidean_loss_parallel(X_d, WH_d, N, M, context, src_mod, compare_to_numpy=False, return_time=False):
     """
-    sum((X - WH)^2)
+    sum((X - WH)^2) TODO: docstring
     """
-    if return_time:
-        start = time.time()
     
-    # compute WH
-    WH = matrix_multiplication(W, H)
+    X_minus_WH_d_square = gpuarray.zeros(((N, M)), dtype=np.float32)
     
-    if compare_to_numpy:
-        print("W x H matches NumPy: ", np.allclose(WH, np.matmul(W, H)))
+    func_sub = src_mod.get_function("MatEleSubtractInPlace") # matrix elementwise subtraction
+    func_sqr = src_mod.get_function("MatEleSquare")
     
+    block_dim, grid_dim = context.block_dims, context.grid_dims2d(N, M)
     
-    # subtract WH from X: X - WH
-    X_minus_WH = matrix_subtract(X, WH)
+    event = func_sub(X_d, WH_d, np.int32(N), np.int32(M), block=block_dim, grid=grid_dim)
+    cuda.Context.synchronize()
     
-    if compare_to_numpy:
-        print("X - WH matches NumPy: ", np.allclose(X_minus_WH, X - np.matmul(W, H)))
+    event = func_sqr(X_d, X_minus_WH_d_square, np.int32(N), np.int32(M), block=block_dim, grid=grid_dim)
+    cuda.Context.synchronize()
     
-    # square 
-    X_minus_WH_squared = matrix_square(X_minus_WH)
+    X_minus_WH_square = X_minus_WH_d_square.get()
     
-    if compare_to_numpy:
-        print("(X - WH)^2 matches NumPy: ", np.allclose(X_minus_WH_squared, np.square(X - np.matmul(W, H))))
-    
-    #sum
-    result = matrix_sum(X_minus_WH_squared)
-    
-    if compare_to_numpy:
-            print("sum((X - WH)^2) matches NumPy: ", np.allclose(result, np.sum(np.square(X - np.matmul(W, H)))))      
-            
-    if return_time:
-        end = time.time()
-        return result, (end-start)*1e3
+    result = matrix_sum(X_minus_WH_square)
     
     return result
 
@@ -49,7 +38,7 @@ def euclidean_loss(X, W, H, compare_to_numpy=False, return_time=False):
 def euclidean_loss_numpy(X, W, H, return_time=False):
     if return_time:
         start = time.time()
-        
+    
     loss = np.matrix(np.square(X - (W.dot(H)))).sum()
     
     if return_time:
