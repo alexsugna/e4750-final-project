@@ -29,16 +29,16 @@ class cudaNMF:
 
     def getSourceModule(self):  
         #open first function
-        text_file = open("./kernels/MatrixMultiplication.cu", "r")
+        text_file = open("/home/sls2305/Desktop/e4750-final-project-main/kernels/MatrixMultiplication.cu", "r")
         func1 = text_file.read()
         text_file.close()
         
         #open second function
-        text_file = open("./kernels/MatrixTranspose.cu", "r")
+        text_file = open("/home/sls2305/Desktop/e4750-final-project-main/kernels/MatrixTranspose.cu", "r")
         func2 = text_file.read()
         text_file.close()
 
-        text_file = open("./kernels/ElementWise.cu", "r")
+        text_file = open("/home/sls2305/Desktop/e4750-final-project-main/kernels/ElementWise.cu", "r")
         func3 = text_file.read()
         text_file.close()
 
@@ -163,10 +163,11 @@ class cudaNMF:
             #H = H * Wt.dot(X) / (Wt.dot(W).dot(H) + err)
 
             #Wt = W.T
-            block_dim, grid_dim = self.getGridDimention(K,N)
-            print(block_dim, grid_dim)
+            block_dim, grid_dim = self.getGridDimention(N,K)
             event = func_tran(W_d, Wt_d, np.int32(K), np.int32(N), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
+
+            
 
             #Wt * X = WtX
             block_dim, grid_dim = self.getGridDimention(K,M)
@@ -258,7 +259,7 @@ if __name__ == "__main__":
     #multiplication test case
     result = test.MatMul(np.float32(a),np.float32(b))
     #print("multiply result:",result)
-    serial_mul = np.matmul(a,b) #numpy multiply test case
+    serial_mul = a.dot(b) #numpy multiply test case
     #print("serial multiply result:",serial_mul)
     if((result == serial_mul).all()):
         print("multiply test case passed")
@@ -266,19 +267,19 @@ if __name__ == "__main__":
     #transpose test case
     result = test.MatTran(np.float32(a))
     #print("transpose result:",result)
-    serial_tran = np.transpose(a)
+    serial_tran = a.T
     if((result == serial_tran).all()):
         print("transpose test case passed")
     
     #NMF test data set
-    data_path = './data/nyt_data.txt'
-    vocab_path = './data/nyt_vocab.dat'
+    data_path = 'nyt_data.txt'
+    vocab_path = 'nyt_vocab.dat'
     data = pd.read_csv(data_path, sep='\n', header=None)
     vocab = pd.read_csv(vocab_path, sep='\n', header=None, names=['words'])
 
     N = 3012 #number of words
     M = 8447 #number of articles
-    X = np.zeros((N, M)) #define the original data matrix
+    X = np.float32(np.zeros((N, M))) #define the original data matrix
 
     #load data, every row is a single document
     #format "idx:cnt" with commas separating each unique word in the document
@@ -296,16 +297,15 @@ if __name__ == "__main__":
 
     #parallel implementation***************************************************************************
     #call NMF function
-    H,W,time = test.NMF(np.float32(X), N, M, K, np.float32(W), np.float32(H))
+    H_out,W_out,time = test.NMF(np.float32(X), N, M, K, np.float32(W), np.float32(H))
 
-    W = W / W.sum(axis=0).reshape(1,-1) #normalize the 25 categories
-    W1 = W
+    W_out = W_out / W_out.sum(axis=0).reshape(1,-1) #normalize the 25 categories
 
     #find the 10 most used words for each category and print
     data = pd.DataFrame(index=range(10), columns=['Topic_%d' % i for i in range(1, 26)])
     for i in range(25):
         column = 'Topic_' + str(i+1)
-        Wi = W[:, i]
+        Wi = W_out[:, i]
         dt = pd.DataFrame(Wi, columns=['weight'])
         dt['words'] = vocab
         dt = dt.sort_values(by='weight', ascending=False)[:10].reset_index(drop=True)
@@ -322,11 +322,11 @@ if __name__ == "__main__":
         if i % 10 == 0:
             print('iteration %d' % i)
             
-        Wt = W.T.astype(np.float32) #w transpose
-        H = H * Wt.dot(X) / (Wt.dot(W).dot(H) + err) #update H
+        Wt = W.T #w transpose
+        H = (H * (Wt.dot(X))) / (((Wt.dot(W)).dot(H)) + err) #update H
 
-        Ht = H.T.astype(np.float32) #H transpose
-        W = W * X.dot(Ht) / (W.dot(H).dot(Ht) + err) #update W
+        Ht = H.T #H transpose
+        W = (W * (X.dot(Ht))) / (((W.dot(H)).dot(Ht)) + err) #update W
 
     end = timer.time() #record end time
     
@@ -343,7 +343,7 @@ if __name__ == "__main__":
         data[column] = dt['weight'].map(lambda x: ('%.4f')%x) + ' ' + dt['words']
     print(data)
 
-    if((W == W1).all()):
+    if((W == W_out).all()):
         print("W test case passed")
 
     print("python serial time:")
