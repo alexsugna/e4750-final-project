@@ -14,24 +14,21 @@ def euclidean_loss_parallel(X_d, WH_d, N, M, context, src_mod, compare_to_numpy=
     """
     sum((X - WH)^2) TODO: docstring
     """
-    
+    X_minus_WH_d = gpuarray.zeros(((N, M)), dtype=np.float32)
     X_minus_WH_d_square = gpuarray.zeros(((N, M)), dtype=np.float32)
     
-    func_sub = src_mod.get_function("MatEleSubtractInPlace") # matrix elementwise subtraction
+    func_sub = src_mod.get_function("MatEleSubtract") # matrix elementwise subtraction
     func_sqr = src_mod.get_function("MatEleSquare")
-    
+
     block_dim, grid_dim = context.block_dims, context.grid_dims2d(N, M)
-    
-    event = func_sub(X_d, WH_d, np.int32(N), np.int32(M), block=block_dim, grid=grid_dim)
+    event = func_sub(X_d, WH_d, X_minus_WH_d, np.int32(N), np.int32(M), block=block_dim, grid=grid_dim)
     cuda.Context.synchronize()
-    
-    event = func_sqr(X_d, X_minus_WH_d_square, np.int32(N), np.int32(M), block=block_dim, grid=grid_dim)
+
+    event = func_sqr(X_minus_WH_d, X_minus_WH_d_square, np.int32(N), np.int32(M), block=block_dim, grid=grid_dim)
     cuda.Context.synchronize()
-    
-    X_minus_WH_square = X_minus_WH_d_square.get()
-    
-    result = matrix_sum(X_minus_WH_square)
-    
+
+    result = matrix_sum(X_minus_WH_d_square.get())
+
     return result
 
 

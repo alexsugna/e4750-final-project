@@ -13,7 +13,7 @@ class Context:
         # if x and y are same size use grid_dims:
         self.grid_dims = lambda length: (int(np.ceil(length / self.block_size)), int(np.ceil(length / self.block_size)), 1)
         # if x and y are not the same size use grid_dims2d:
-        self.grid_dims2d = lambda x, y : (int(np.ceil(x / self.block_size)), int(np.ceil(y / self.block_size)), 1)
+        self.grid_dims2d = lambda x, y : (int(np.ceil(y / self.block_size)), int(np.ceil(x / self.block_size)), 1)
     
     def getSourceModule(self, kernel_path, multiple_kernels=False):
         

@@ -29,16 +29,16 @@ class cudaNMF:
 
     def getSourceModule(self):  
         #open first function
-        text_file = open("/home/sls2305/Desktop/e4750-final-project-main/kernels/MatrixMultiplication.cu", "r")
+        text_file = open("./kernels/MatrixMultiplication.cu", "r")
         func1 = text_file.read()
         text_file.close()
         
         #open second function
-        text_file = open("/home/sls2305/Desktop/e4750-final-project-main/kernels/MatrixTranspose.cu", "r")
+        text_file = open("./kernels/MatrixTranspose.cu", "r")
         func2 = text_file.read()
         text_file.close()
 
-        text_file = open("/home/sls2305/Desktop/e4750-final-project-main/kernels/ElementWise.cu", "r")
+        text_file = open("./kernels/ElementWise.cu", "r")
         func3 = text_file.read()
         text_file.close()
 
@@ -164,6 +164,7 @@ class cudaNMF:
 
             #Wt = W.T
             block_dim, grid_dim = self.getGridDimention(K,N)
+            print(block_dim, grid_dim)
             event = func_tran(W_d, Wt_d, np.int32(K), np.int32(N), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
@@ -270,8 +271,8 @@ if __name__ == "__main__":
         print("transpose test case passed")
     
     #NMF test data set
-    data_path = 'nyt_data.txt'
-    vocab_path = 'nyt_vocab.dat'
+    data_path = './data/nyt_data.txt'
+    vocab_path = './data/nyt_vocab.dat'
     data = pd.read_csv(data_path, sep='\n', header=None)
     vocab = pd.read_csv(vocab_path, sep='\n', header=None, names=['words'])
 

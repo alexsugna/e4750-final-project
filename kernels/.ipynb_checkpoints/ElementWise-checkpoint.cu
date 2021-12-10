@@ -20,7 +20,7 @@ __global__ void MatEleAdd(float* A, float* B, float *C, int height, int width){
     }
 }
 
-__global__ void MatEleSubtract(float* A, float* B, float *C, int height, int width){
+__global__ void MatEleSubtract(float* A, float* B, float* C, int height, int width){
     int x = threadIdx.x + blockDim.x * blockIdx.x;
     int y = threadIdx.y + blockDim.y * blockIdx.y;
     
@@ -77,15 +77,5 @@ __global__ void MatEleDivideInPlace(float* A, float* B, int height, int width){
     if(x < width && y < height){
         int index = y * width + x;
         A[index] = A[index] / B[index];
-    }
-}
-
-__global__ void MatEleSubtractInPlace(float* A, float* B, int height, int width){
-    int x = threadIdx.x + blockDim.x * blockIdx.x;
-    int y = threadIdx.y + blockDim.y * blockIdx.y;
-    
-    if(x < width && y < height){
-        int index = y * width + x;
-        A[index] = A[index] - B[index];
     }
 }

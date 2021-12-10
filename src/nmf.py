@@ -13,7 +13,7 @@ from .context import Context
 
 BLOCK_SIZE = 32
 
-def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time=True):
+def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time=True, print_iterations=True):
     """
     Performs NumPy (serial) NMF.
     
@@ -45,7 +45,7 @@ def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time
     losses = [] #keep track of objective function evaluation for each iteration
     
     for i in range(1, iterations+1):
-        if i % 10 == 0:
+        if i % 10 == 0 and print_iterations:
             print('iteration %d' % i)
 
         #objective function
@@ -84,7 +84,7 @@ def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time
     return W, H, losses
 
 
-def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time=True):
+def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time=True, print_iterations=True):
     """
     Performs CUDA (parallel) NMF.
     
@@ -154,7 +154,7 @@ def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_ti
     
     # Record execution time and execute operation.
     for i in range(1, iterations+1):
-        if i % 10 == 0:
+        if i % 10 == 0 and print_iterations:
             print('iteration %d' % i)
             
         #UPDATE H *****************************************************************************
@@ -226,10 +226,10 @@ def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_ti
         cuda.Context.synchronize()
 
         #W = W * X.dot(Ht) / (W.dot(H).dot(Ht) + err) #update W
-        euclidean_loss = euclidean_loss_parallel(X_d, WH_d, N, M, context, src_mod)
-#         euclidean_loss = euclidean_loss_numpy(X_d.get(), W_d.get(), H_d.get())
-    
-#         print(euclidean_loss)
+        
+#         euclidean_loss = euclidean_loss_parallel(X_d, WH_d, N, M, context, src_mod)
+#         euclidean_loss_np = euclidean_loss_numpy(X_d.get(), W_d.get(), H_d.get())
+        
     #g_end.record()
     # Fetch result from device to host
     H = H_d.get()
