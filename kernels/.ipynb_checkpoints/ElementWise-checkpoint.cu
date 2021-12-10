@@ -20,7 +20,7 @@ __global__ void MatEleAdd(float* A, float* B, float *C, int height, int width){
     }
 }
 
-__global__ void MatEleSubtract(float* A, float* B, float *C, int height, int width){
+__global__ void MatEleSubtract(float* A, float* B, float* C, int height, int width){
     int x = threadIdx.x + blockDim.x * blockIdx.x;
     int y = threadIdx.y + blockDim.y * blockIdx.y;
     

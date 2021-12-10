@@ -8,8 +8,9 @@ import time as timer
 
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+from matplotlib import pyplot
 import math
+from scipy.sparse import random
 
 class cudaNMF:
     def __init__(self):
@@ -29,16 +30,16 @@ class cudaNMF:
 
     def getSourceModule(self):  
         #open first function
-        text_file = open("./kernels/MatrixMultiplication.cu", "r")
+        text_file = open("/home/sls2305/Desktop/e4750-final-project-main/kernels/MatrixMultiplication.cu", "r")
         func1 = text_file.read()
         text_file.close()
         
         #open second function
-        text_file = open("./kernels/MatrixTranspose.cu", "r")
+        text_file = open("/home/sls2305/Desktop/e4750-final-project-main/kernels/MatrixTranspose.cu", "r")
         func2 = text_file.read()
         text_file.close()
 
-        text_file = open("./kernels/ElementWise.cu", "r")
+        text_file = open("/home/sls2305/Desktop/e4750-final-project-main/kernels/ElementWise.cu", "r")
         func3 = text_file.read()
         text_file.close()
 
@@ -164,7 +165,6 @@ class cudaNMF:
 
             #Wt = W.T
             block_dim, grid_dim = self.getGridDimention(K,N)
-            print(block_dim, grid_dim)
             event = func_tran(W_d, Wt_d, np.int32(K), np.int32(N), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
@@ -198,7 +198,7 @@ class cudaNMF:
             event = func_div(H_d, WtWH_d, np.int32(K), np.int32(M), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
-            #W UPDATE*******************************************************************************************
+            #W UPDATE*************************************************************************************
 
             #Ht = H.T #H transpose
             block_dim, grid_dim = self.getGridDimention(K,M)
@@ -251,102 +251,63 @@ class cudaNMF:
 if __name__ == "__main__":
     # Main code
     test = cudaNMF()
-    a = np.random.randint(5, size=(32, 64))
-    b = np.random.randint(5, size=(64, 32))
-    print("a:",a)
-    print("b:",b)
-    #multiplication test case
-    result = test.MatMul(np.float32(a),np.float32(b))
-    #print("multiply result:",result)
-    serial_mul = np.matmul(a,b) #numpy multiply test case
-    #print("serial multiply result:",serial_mul)
-    if((result == serial_mul).all()):
-        print("multiply test case passed")
-
-    #transpose test case
-    result = test.MatTran(np.float32(a))
-    #print("transpose result:",result)
-    serial_tran = np.transpose(a)
-    if((result == serial_tran).all()):
-        print("transpose test case passed")
     
-    #NMF test data set
-    data_path = './data/nyt_data.txt'
-    vocab_path = './data/nyt_vocab.dat'
-    data = pd.read_csv(data_path, sep='\n', header=None)
-    vocab = pd.read_csv(vocab_path, sep='\n', header=None, names=['words'])
+    num_runs = 4
+    parallel_times = np.empty(num_runs)
+    serial_times = np.empty(num_runs) 
+    input_size = np.array([10,100,1000,10000]) 
 
-    N = 3012 #number of words
-    M = 8447 #number of articles
-    X = np.zeros((N, M)) #define the original data matrix
+    for j in range(num_runs):
 
-    #load data, every row is a single document
-    #format "idx:cnt" with commas separating each unique word in the document
-    for column in range(M):
-        row = data.iloc[column].values[0].split(',')
-        for item in row:
-            index, count = map(int, item.split(':'))
-            X[index-1][column] = count
+        #NMF test data set
+        N = input_size[j] #number of words
+        M = input_size[j] #number of articles
+        K = 25 #rank to factor into
+
+        #X = np.float32(np.random.rand(N, M)) #define the original data matrix
+        sparse_X = random(N, M, density=0.05,dtype=np.float32) #define original sparse data
+        X = sparse_X.A.astype(np.float32)
+
+        # Device memory allocation for input and output array(s)
+        W = np.float32(np.random.uniform(1, 2, (N, K))) #initialize W and H to random values between 1 and 2
+        H = np.float32(np.random.uniform(1, 2, (K, M)))
+
+        #parallel implementation***************************************************************************
+        #call NMF function
+        H_out,W_out,time = test.NMF(np.float32(X), N, M, K, np.float32(W), np.float32(H))
+        parallel_times[j] = time
+
+        W_out = W_out / W_out.sum(axis=0).reshape(1,-1) #normalize the 25 categories
+
+        #numpy implementation******************************************************************************
+        iteration = 100
+        err = 1e-16 #a small error to prevent 0/0
+
+        start = timer.time() #record start time
+
+        for i in range(1, iteration+1):
+            if i % 10 == 0:
+                print('iteration %d' % i)
+                
+            Wt = W.T #w transpose
+            H = (H * (Wt.dot(X))) / (((Wt.dot(W)).dot(H)) + err) #update H
+
+            Ht = H.T #H transpose
+            W = (W * (X.dot(Ht))) / (((W.dot(H)).dot(Ht)) + err) #update W
+
+        end = timer.time() #record end time
+        serial_times[j] = end-start        
+
+        W = W / W.sum(axis=0).reshape(1,-1) #normalize the 25 categories
+
+    pyplot.plot(input_size*input_size, serial_times, label = "serial")
+    pyplot.plot(input_size*input_size, parallel_times, label = "parallel")
     
-    K = 25
-
-    # Device memory allocation for input and output array(s)
-    W = np.float32(np.random.uniform(1, 2, (N, K))) #initialize W and H to random values between 1 and 2
-    H = np.float32(np.random.uniform(1, 2, (K, M)))
-
-    #parallel implementation***************************************************************************
-    #call NMF function
-    H,W,time = test.NMF(np.float32(X), N, M, K, np.float32(W), np.float32(H))
-
-    W = W / W.sum(axis=0).reshape(1,-1) #normalize the 25 categories
-    W1 = W
-
-    #find the 10 most used words for each category and print
-    data = pd.DataFrame(index=range(10), columns=['Topic_%d' % i for i in range(1, 26)])
-    for i in range(25):
-        column = 'Topic_' + str(i+1)
-        Wi = W[:, i]
-        dt = pd.DataFrame(Wi, columns=['weight'])
-        dt['words'] = vocab
-        dt = dt.sort_values(by='weight', ascending=False)[:10].reset_index(drop=True)
-        data[column] = dt['weight'].map(lambda x: ('%.4f')%x) + ' ' + dt['words']
-    print(data)
-
-    #numpy implementation******************************************************************************
-    iteration = 100
-    err = 1e-16 #a small error to prevent 0/0
-
-    start = timer.time() #record start time
-
-    for i in range(1, iteration+1):
-        if i % 10 == 0:
-            print('iteration %d' % i)
-            
-        Wt = W.T.astype(np.float32) #w transpose
-        H = H * Wt.dot(X) / (Wt.dot(W).dot(H) + err) #update H
-
-        Ht = H.T.astype(np.float32) #H transpose
-        W = W * X.dot(Ht) / (W.dot(H).dot(Ht) + err) #update W
-
-    end = timer.time() #record end time
-    
-    W = W / W.sum(axis=0).reshape(1,-1) #normalize the 25 categories
-    
-    #find the 10 most used words for each category and print
-    data = pd.DataFrame(index=range(10), columns=['Topic_%d' % i for i in range(1, 26)])
-    for i in range(25):
-        column = 'Topic_' + str(i+1)
-        Wi = W[:, i]
-        dt = pd.DataFrame(Wi, columns=['weight'])
-        dt['words'] = vocab
-        dt = dt.sort_values(by='weight', ascending=False)[:10].reset_index(drop=True)
-        data[column] = dt['weight'].map(lambda x: ('%.4f')%x) + ' ' + dt['words']
-    print(data)
-
-    if((W == W1).all()):
-        print("W test case passed")
-
-    print("python serial time:")
-    print(end-start)
-    print("cuda parallel time:")
-    print(time)
+    #format
+    pyplot.yscale('log')
+    pyplot.xscale('log')
+    pyplot.legend(loc=2, prop={'size': 9})
+    pyplot.xlabel('Matrix Elements [log scale]')
+    pyplot.ylabel('Runtime [log scale (sec)]')
+    pyplot.title('pyCUDA Non-Negative Matrix Factorization (K=25)')
+    pyplot.savefig('cuda.png')

@@ -79,3 +79,25 @@ __global__ void MatEleDivideInPlace(float* A, float* B, int height, int width){
         A[index] = A[index] / B[index];
     }
 }
+
+//divide all elements by the sum of the row
+__global__ void MatEleDivideRow(float* A, float* B, int height, int width){
+    int x = threadIdx.x + blockDim.x * blockIdx.x;
+    int y = threadIdx.y + blockDim.y * blockIdx.y;
+    if(x < width && y < height){
+        int index = y * width + x;
+        int row_idx = y;
+        A[index] = A[index] / B[row_idx];
+    }
+}
+
+// divide all elements by the sum of the column
+__global__ void MatEleDivideCol(float* A, float* B, int height, int width){
+    int x = threadIdx.x + blockDim.x * blockIdx.x;
+    int y = threadIdx.y + blockDim.y * blockIdx.y;
+    if(x < width && y < height){
+        int index = y * width + x;
+        int col_idx = x;
+        A[index] = A[index] / B[col_idx];
+    }
+}

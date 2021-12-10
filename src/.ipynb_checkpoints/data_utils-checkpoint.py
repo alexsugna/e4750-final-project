@@ -44,12 +44,12 @@ def get_matrices(K, random_seed=0):
             index, count = map(int, item.split(':'))
             X[index-1][column] = count
     
-    np.random.seed(0)
+    np.random.seed(random_seed)
 
     W = np.random.uniform(1, 2, (N, K)) #initialize W and H to random values between 1 and 2
     H = np.random.uniform(1, 2, (K, M))
     
-    return X, W, H
+    return X.astype(np.float32), W.astype(np.float32), H.astype(np.float32)
 
 
 def get_topics(W, top_n=10, print_results=True):
@@ -82,6 +82,38 @@ def get_topics(W, top_n=10, print_results=True):
         print(data)
         
     return data
+
+
+def get_n_matrices(K, X_shape, random_seed=0):
+    """
+    Return the matrices X, W, and H for NMF where X of size X_shape
+    is generated randomly.
+    
+    params:
+        K (int): number of factored categories (components)
+        
+        X_shape (tuple of ints): dimensions of X (N, M)
+        
+        random_seed=0 (int): the seed for random matrix generation
+        
+    returns:
+        X (N, M): randomly generated matrix
+        
+        W (N, K): the W matrix 
+        
+        H (K, M): the H matrix 
+    """
+    np.random.seed(random_seed) # initialize random seed
+    
+    X = np.random.randint(0, high=10, size=X_shape) # generate random X
+
+    W = np.random.uniform(1, 2, (X_shape[0], K)) #initialize W and H to random values between 1 and 2
+    H = np.random.uniform(1, 2, (K, X_shape[1]))
+    
+    return X.astype(np.float32), W.astype(np.float32), H.astype(np.float32) # return matrices as float32
+    
+    
+    
 
     
     
