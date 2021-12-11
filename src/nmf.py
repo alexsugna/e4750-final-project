@@ -39,6 +39,8 @@ def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time
 
         losses (list): List of loss at each iteration
     """
+    print("Starting {} iterations of serial NMF with {} loss.".format(iterations, loss)) 
+    
     if return_time:
         start = time.time()
 
@@ -46,7 +48,7 @@ def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time
 
     for i in range(1, iterations+1):
         if i % 10 == 0 and print_iterations:
-            print('iteration %d' % i)
+            print('Iteration: %d' % i)
 
         #objective function
         if loss == 'euclidean':
@@ -110,6 +112,7 @@ def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_ti
 
         squared_out (list): List of loss at each iteration
     """
+    print("Starting {} iterations of parallel NMF with {} multiplicative updates.".format(iterations, loss)) 
     context = Context(BLOCK_SIZE) # define context
 
     # define kernel paths
@@ -162,7 +165,7 @@ def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_ti
         #H = H * Wt.dot(X) / (Wt.dot(W).dot(H) + err)
 
         #Wt = W.T
-        block_dim, grid_dim = context.block_dims, context.grid_dims2d(K,N)
+        block_dim, grid_dim = context.block_dims, context.grid_dims2d(N, K)
         event = func_tran(W_d, Wt_d, np.int32(K), np.int32(N), block=block_dim, grid=grid_dim)
         cuda.Context.synchronize()
 
