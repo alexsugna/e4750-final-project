@@ -167,8 +167,6 @@ class cudaNMF:
             event = func_tran(W_d, Wt_d, np.int32(K), np.int32(N), block=block_dim, grid=grid_dim)
             cuda.Context.synchronize()
 
-            
-
             #Wt * X = WtX
             block_dim, grid_dim = self.getGridDimention(K,M)
             event = func_mul(Wt_d, X_d, WtX_d, np.int32(K), np.int32(N), np.int32(N), np.int32(M), np.int32(K), np.int32(M), block=block_dim, grid=grid_dim)
