@@ -152,13 +152,36 @@ def plot_execution_times(execution_times_parallel, execution_times_serial, title
 
     plt.xticks([int(i) for i in range(len(input_sizes))], input_sizes)
 
-    title = "Parallel NMF Execution time vs Array Size"
     axis.set_title(title)
     axis.grid()
     
     axis.legend(['Serial NMF (NumPy)', 'Parallel NMF (CUDA)'])
 
     extent = axis.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-    fig.savefig("./{}.png".format(title), bbox_inches=extent.expanded(1.2, 1.2))
+    fig.savefig("./figures/{}.png".format(title), bbox_inches=extent.expanded(1.2, 1.2))
     
     plt.show()
+    
+    
+def plot_loss(loss, title, loss_type='euclidean'):
+    """
+    Generates a plot of the loss
+    """
+    fig = plt.figure(figsize=(8, 7)) # make plot
+    axis = fig.add_axes([0,0,1,1])
+    
+    axis.plot(loss, color='blue', linestyle='-')
+    
+    axis.set_ylabel("{} loss".format(loss_type))
+    axis.set_xlabel("Iteration")
+    
+    axis.set_title(title)
+    
+    extent = axis.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+    fig.savefig("./figures/{}.png".format(title), bbox_inches=extent.expanded(1.2, 1.2))
+    
+    plt.show()
+    
+    
+    
+                    
