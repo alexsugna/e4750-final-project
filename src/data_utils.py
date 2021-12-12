@@ -121,7 +121,8 @@ def get_n_matrices(K, X_shape, random_seed=0):
     return X.astype(np.float32), W.astype(np.float32), H.astype(np.float32) # return matrices as float32
 
 
-def plot_execution_times(execution_times_parallel, execution_times_serial, title, input_sizes):
+def plot_execution_times(execution_times_parallel, execution_times_serial, 
+                         execution_times_sklearn, title, input_sizes):
     """
     Generates a plot of execution time vs input array size for parallel and serial
     implementation of NMF.
@@ -145,8 +146,8 @@ def plot_execution_times(execution_times_parallel, execution_times_serial, title
 
     axis.plot(execution_times_serial, color='red', marker='o', ms=marker_size)
     axis.plot(execution_times_parallel, color='green', marker='o', ms=marker_size)
+    axis.plot(execution_times_sklearn, color='blue', marker='o', ms=marker_size)
     
-
     axis.set_ylabel("Execution Time (s)")
     axis.set_xlabel("Array Size")
 
@@ -155,7 +156,7 @@ def plot_execution_times(execution_times_parallel, execution_times_serial, title
     axis.set_title(title)
     axis.grid()
     
-    axis.legend(['Serial NMF (NumPy)', 'Parallel NMF (CUDA)'])
+    axis.legend(['Serial NMF (NumPy)', 'Parallel NMF (CUDA)', 'Serial NMF (Sklearn)'])
 
     extent = axis.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
     fig.savefig("./figures/{}.png".format(title), bbox_inches=extent.expanded(1.2, 1.2))

@@ -7,6 +7,7 @@ import time
 import matplotlib.pyplot as plt
 import pycuda.driver as cuda
 from pycuda import gpuarray
+from sklearn.decomposition import NMF
 
 from .loss_functions import euclidean_loss_numpy, divergence_loss_numpy, euclidean_loss_parallel
 from .context import Context
@@ -128,11 +129,11 @@ def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_ti
     func_tran = src_mod.get_function("MatTran") # matrix transpose
     func_add = src_mod.get_function("MatEleAddInPlace") # matrix elementwise addition
     func_div = src_mod.get_function("MatEleDivideInPlace") # matrix elementwise division
-    func_divC = self.mod.get_function("MatEleDivide") # gives output C matrix
-    func_row_sum = self.mod.get_function("row_sum") # matrix elementwise division
-    func_col_sum = self.mod.get_function("column_sum") # matrix elementwise division
-    func_row_div = self.mod.get_function("MatEleDivideRow") # divide row by sum
-    func_col_div = self.mod.get_function("MatEleDivideCol") # divide col by sum
+    func_divC = src_mod.get_function("MatEleDivide") # gives output C matrix
+    func_row_sum = src_mod.get_function("row_sum") # matrix elementwise division
+    func_col_sum = src_mod.get_function("column_sum") # matrix elementwise division
+    func_row_div = src_mod.get_function("MatEleDivideRow") # divide row by sum
+    func_col_div = src_mod.get_function("MatEleDivideCol") # divide col by sum
 
     if return_time:
         # Event objects to mark start and end points
@@ -392,3 +393,57 @@ def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_ti
         return W, H, total_time
 
     return W, H
+
+
+def NMF_sklearn(X, W, H, iterations=100, loss='euclidean', return_time=True):
+    """
+    A wrapper function for sklearn.decomposition.NMF. The purpose of this function is to 
+    match to function call signature of NMF_serial() and NMF_parallel() above to simplify
+    the execution time comparison code.
+    
+    params:
+        X (N, M): the original data matrix
+
+        W (N, K): the W matrix (of articles by topic)
+
+        H (K, M): the H matrix (of topics by word)
+
+        iterations=100 (int): the number of matrix factorization updates
+
+        loss='euclidean' (string): one of ['euclidean', 'divergence'] to specify the loss function/update scheme
+
+        return_time=True (bool): return the execution time in s
+
+    returns:
+        W (N, K): the factored matrix W
+
+        H (K, M): the factored matrix H
+    """
+    print("Starting {} iterations of Scikit-learn NMF with {} loss.".format(iterations, loss)) 
+    
+    K = W.shape[1] # get num_topics
+    
+    if loss == 'euclidean': # map loss type to string sklearn is expecting
+        beta_loss = 'frobenius'
+        
+    elif loss == 'divergence':
+        beta_loss = 'kullback-leibler'
+        
+    else:
+        raise Exception('Loss function "{}" not supported.'.format(loss))
+        
+    if return_time:
+        start = time.time() # record start time
+        
+    model = NMF(n_components=K, init='custom', beta_loss=beta_loss, max_iter=iterations, solver='mu', tol=1e-10)
+    
+    W_sklearn = model.fit_transform(X, W=W, H=H) # retrieve W, H
+    H_sklearn = model.components_
+    
+    if return_time: # return execution time and W, H
+        end = time.time()
+        return W_sklearn, H_sklearn, end - start
+    
+    return W_sklearn, H_sklearn
+    
+    
