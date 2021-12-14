@@ -1,157 +1,157 @@
-Function, X shape (squared), K, Loss Type, Execution Time (s) (100 iterations)
-NMF_parallel, 10, 1, euclidean, 0.041208710098266606
-NMF_serial, 10, 1, euclidean, 0.0008939266204833985
-NMF_sklearn, 10, 1, euclidean, 0.0006606101989746094
-NMF_parallel, 10, 1, divergence, 0.04871088600158692
-NMF_serial, 10, 1, divergence, 0.0018909692764282227
-NMF_sklearn, 10, 1, divergence, 0.000982379913330078
-NMF_parallel, 10, 10, euclidean, 0.043115513992309576
-NMF_serial, 10, 10, euclidean, 0.0016407489776611329
-NMF_sklearn, 10, 10, euclidean, 0.004743504524230957
-NMF_parallel, 10, 10, divergence, 0.04959863662719727
-NMF_serial, 10, 10, divergence, 0.003240060806274414
-NMF_sklearn, 10, 10, divergence, 0.0079728364944458
-NMF_parallel, 10, 100, euclidean, 0.07223752975463868
-NMF_serial, 10, 100, euclidean, 0.00910642147064209
-NMF_sklearn, 10, 100, euclidean, 0.016551685333251954
-NMF_parallel, 10, 100, divergence, 0.05674002952575684
-NMF_serial, 10, 100, divergence, 0.011681628227233887
-NMF_sklearn, 10, 100, divergence, 0.00934915542602539
-NMF_parallel, 10, 1000, euclidean, 0.1233064743041992
-NMF_serial, 10, 1000, euclidean, 0.34803698062896726
-NMF_sklearn, 10, 1000, euclidean, 0.38522751331329347
-NMF_parallel, 10, 1000, divergence, 0.08657706832885745
-NMF_serial, 10, 1000, divergence, 0.09018998146057129
-NMF_sklearn, 10, 1000, divergence, 0.04303412437438965
-NMF_parallel, 50, 1, euclidean, 0.04225972404479981
-NMF_serial, 50, 1, euclidean, 0.0011823654174804687
-NMF_sklearn, 50, 1, euclidean, 0.0007558584213256836
-NMF_parallel, 50, 1, divergence, 0.05059606399536134
-NMF_serial, 50, 1, divergence, 0.0026761531829833985
-NMF_sklearn, 50, 1, divergence, 0.001549530029296875
-NMF_parallel, 50, 10, euclidean, 0.04402009925842285
-NMF_serial, 50, 10, euclidean, 0.009039354324340821
-NMF_sklearn, 50, 10, euclidean, 0.009078550338745116
-NMF_parallel, 50, 10, divergence, 0.051161676406860354
-NMF_serial, 50, 10, divergence, 0.0073271989822387695
-NMF_sklearn, 50, 10, divergence, 0.013930773735046387
-NMF_parallel, 50, 100, euclidean, 0.07380179252624512
-NMF_serial, 50, 100, euclidean, 0.045923900604248044
-NMF_sklearn, 50, 100, euclidean, 0.04907402992248535
-NMF_parallel, 50, 100, divergence, 0.05959401588439941
-NMF_serial, 50, 100, divergence, 0.13512775897979737
-NMF_sklearn, 50, 100, divergence, 0.14111051559448243
-NMF_parallel, 50, 1000, euclidean, 0.1494516830444336
-NMF_serial, 50, 1000, euclidean, 0.5558394432067871
-NMF_sklearn, 50, 1000, euclidean, 0.5818649053573608
-NMF_parallel, 50, 1000, divergence, 0.12181468505859375
-NMF_serial, 50, 1000, divergence, 0.7509323358535767
-NMF_sklearn, 50, 1000, divergence, 0.5677110195159912
-NMF_parallel, 100, 1, euclidean, 0.0764777633666992
-NMF_serial, 100, 1, euclidean, 0.004086995124816894
-NMF_sklearn, 100, 1, euclidean, 0.0015479564666748048
-NMF_parallel, 100, 1, divergence, 0.08865297546386719
-NMF_serial, 100, 1, divergence, 0.008722257614135743
-NMF_sklearn, 100, 1, divergence, 0.0034851789474487304
-NMF_parallel, 100, 10, euclidean, 0.05078958396911622
-NMF_serial, 100, 10, euclidean, 0.008876466751098632
-NMF_sklearn, 100, 10, euclidean, 0.00994720458984375
-NMF_parallel, 100, 10, divergence, 0.054674325942993166
-NMF_serial, 100, 10, divergence, 0.010674071311950684
-NMF_sklearn, 100, 10, divergence, 0.01891016960144043
-NMF_parallel, 100, 100, euclidean, 0.0780602813720703
-NMF_serial, 100, 100, euclidean, 0.2673548698425293
-NMF_sklearn, 100, 100, euclidean, 0.21244125366210936
-NMF_parallel, 100, 100, divergence, 0.09635198059082031
-NMF_serial, 100, 100, divergence, 0.18225932121276855
-NMF_sklearn, 100, 100, divergence, 0.20963263511657715
-NMF_parallel, 100, 1000, euclidean, 0.21993238830566408
-NMF_serial, 100, 1000, euclidean, 1.1441688776016234
-NMF_sklearn, 100, 1000, euclidean, 1.1521947622299193
-NMF_parallel, 100, 1000, divergence, 0.1390974884033203
-NMF_serial, 100, 1000, divergence, 1.67126784324646
-NMF_sklearn, 100, 1000, divergence, 1.5151689767837524
-NMF_parallel, 500, 1, euclidean, 0.10602890853881834
-NMF_serial, 500, 1, euclidean, 0.03301148414611817
-NMF_sklearn, 500, 1, euclidean, 0.004632139205932617
-NMF_parallel, 500, 1, divergence, 0.11821015548706056
-NMF_serial, 500, 1, divergence, 0.10619125366210938
-NMF_sklearn, 500, 1, divergence, 0.04023811817169189
-NMF_parallel, 500, 10, euclidean, 0.10555504989624025
-NMF_serial, 500, 10, euclidean, 0.08596389293670655
-NMF_sklearn, 500, 10, euclidean, 0.06734941005706788
-NMF_parallel, 500, 10, divergence, 0.12002866287231446
-NMF_serial, 500, 10, divergence, 0.14911937713623047
-NMF_sklearn, 500, 10, divergence, 0.2610193967819214
-NMF_parallel, 500, 100, euclidean, 0.1509550796508789
-NMF_serial, 500, 100, euclidean, 0.7934116840362548
-NMF_sklearn, 500, 100, euclidean, 0.4742149591445923
-NMF_parallel, 500, 100, divergence, 0.15987585754394532
-NMF_serial, 500, 100, divergence, 0.5973462104797364
-NMF_sklearn, 500, 100, divergence, 0.7822435617446899
-NMF_parallel, 500, 1000, euclidean, 0.6520739440917971
-NMF_serial, 500, 1000, euclidean, 36.3603652715683
-NMF_sklearn, 500, 1000, euclidean, 25.810643458366393
-NMF_parallel, 500, 1000, divergence, 0.43698095092773437
-NMF_serial, 500, 1000, divergence, 25.79015028476715
-NMF_sklearn, 500, 1000, divergence, 26.224240326881407
-NMF_parallel, 1000, 1, euclidean, 0.13813678436279297
-NMF_serial, 1000, 1, euclidean, 0.08512351512908936
-NMF_sklearn, 1000, 1, euclidean, 0.01134164333343506
-NMF_parallel, 1000, 1, divergence, 0.1514360015869141
-NMF_serial, 1000, 1, divergence, 0.3639822006225586
-NMF_sklearn, 1000, 1, divergence, 0.19705538749694823
-NMF_parallel, 1000, 10, euclidean, 0.14369166107177736
-NMF_serial, 1000, 10, euclidean, 0.2940228939056396
-NMF_sklearn, 1000, 10, euclidean, 0.19768896102905273
-NMF_parallel, 1000, 10, divergence, 0.1641493621826172
-NMF_serial, 1000, 10, divergence, 0.5226265668869019
-NMF_sklearn, 1000, 10, divergence, 0.9218469142913819
-NMF_parallel, 1000, 100, euclidean, 0.20653578948974607
-NMF_serial, 1000, 100, euclidean, 0.8604491949081421
-NMF_sklearn, 1000, 100, euclidean, 0.5546665191650391
-NMF_parallel, 1000, 100, divergence, 0.3348694061279297
-NMF_serial, 1000, 100, divergence, 1.0329613924026488
-NMF_sklearn, 1000, 100, divergence, 1.4779591798782348
-NMF_parallel, 1000, 1000, euclidean, 1.672859045410156
-NMF_serial, 1000, 1000, euclidean, 126.50476162433624
-NMF_sklearn, 1000, 1000, euclidean, 91.80213453769684
-NMF_parallel, 1000, 1000, divergence, 1.1901146240234373
-NMF_serial, 1000, 1000, divergence, 47.70657262802124
-NMF_sklearn, 1000, 1000, divergence, 52.048364067077635
-NMF_parallel, 5000, 1, euclidean, 0.946351629638672
-NMF_serial, 5000, 1, euclidean, 5.3979761600494385
-NMF_sklearn, 5000, 1, euclidean, 0.4987858057022095
-NMF_parallel, 5000, 1, divergence, 1.3833906127929687
-NMF_serial, 5000, 1, divergence, 23.42454421520233
-NMF_sklearn, 5000, 1, divergence, 6.141175270080566
-NMF_parallel, 5000, 10, euclidean, 0.9720672912597657
-NMF_serial, 5000, 10, euclidean, 10.301435160636903
-NMF_sklearn, 5000, 10, euclidean, 5.514632797241211
-NMF_parallel, 5000, 10, divergence, 1.4107176879882812
-NMF_serial, 5000, 10, divergence, 26.925211572647093
-NMF_sklearn, 5000, 10, divergence, 38.3465315580368
-NMF_parallel, 5000, 100, euclidean, 3.151235400390625
-NMF_serial, 5000, 100, euclidean, 20.068783855438234
-NMF_sklearn, 5000, 100, euclidean, 10.923367547988892
-NMF_parallel, 5000, 100, divergence, 3.5741487792968747
-NMF_serial, 5000, 100, divergence, 36.6018146276474
-NMF_sklearn, 5000, 100, divergence, 48.14016139507294
-NMF_parallel, 5000, 1000, euclidean, 28.266294921874998
-NMF_serial, 5000, 1000, euclidean, 142.17153024673462
-NMF_sklearn, 5000, 1000, euclidean, 92.1860191822052
-NMF_parallel, 5000, 1000, divergence, 26.853362890625
-NMF_serial, 5000, 1000, divergence, 148.0317919254303
-NMF_sklearn, 5000, 1000, divergence, 163.31093821525573
-NMF_parallel, 10000, 1, euclidean, 3.2508330078125
-NMF_serial, 10000, 1, euclidean, 21.556931376457214
-NMF_sklearn, 10000, 1, euclidean, 1.7939713716506958
-NMF_parallel, 10000, 1, divergence, 5.05897578125
-NMF_serial, 10000, 1, divergence, 82.16619663238525
-NMF_sklearn, 10000, 1, divergence, 23.578754949569703
-NMF_parallel, 10000, 10, euclidean, 3.3362072998046877
-NMF_serial, 10000, 10, euclidean, 40.71775493621826
-NMF_sklearn, 10000, 10, euclidean, 4.109000134468078
-NMF_parallel, 10000, 10, divergence, 5.129283056640625
-NMF_serial, 10000, 10, divergence, 95.65252125263214
-NMF_sklearn, 10000, 10, divergence, 27.057733964920043
+Function, X_shape, K, Loss Type,Execution Time
+NMF_parallel,10,1, euclidean,0.04120871
+NMF_serial,10,1, euclidean,0.000893927
+NMF_sklearn,10,1, euclidean,0.00066061
+NMF_parallel,10,1, divergence,0.048710886
+NMF_serial,10,1, divergence,0.001890969
+NMF_sklearn,10,1, divergence,0.00098238
+NMF_parallel,10,10, euclidean,0.043115514
+NMF_serial,10,10, euclidean,0.001640749
+NMF_sklearn,10,10, euclidean,0.004743505
+NMF_parallel,10,10, divergence,0.049598637
+NMF_serial,10,10, divergence,0.003240061
+NMF_sklearn,10,10, divergence,0.007972836
+NMF_parallel,10,100, euclidean,0.07223753
+NMF_serial,10,100, euclidean,0.009106421
+NMF_sklearn,10,100, euclidean,0.016551685
+NMF_parallel,10,100, divergence,0.05674003
+NMF_serial,10,100, divergence,0.011681628
+NMF_sklearn,10,100, divergence,0.009349155
+NMF_parallel,10,1000, euclidean,0.123306474
+NMF_serial,10,1000, euclidean,0.348036981
+NMF_sklearn,10,1000, euclidean,0.385227513
+NMF_parallel,10,1000, divergence,0.086577068
+NMF_serial,10,1000, divergence,0.090189981
+NMF_sklearn,10,1000, divergence,0.043034124
+NMF_parallel,50,1, euclidean,0.042259724
+NMF_serial,50,1, euclidean,0.001182365
+NMF_sklearn,50,1, euclidean,0.000755858
+NMF_parallel,50,1, divergence,0.050596064
+NMF_serial,50,1, divergence,0.002676153
+NMF_sklearn,50,1, divergence,0.00154953
+NMF_parallel,50,10, euclidean,0.044020099
+NMF_serial,50,10, euclidean,0.009039354
+NMF_sklearn,50,10, euclidean,0.00907855
+NMF_parallel,50,10, divergence,0.051161676
+NMF_serial,50,10, divergence,0.007327199
+NMF_sklearn,50,10, divergence,0.013930774
+NMF_parallel,50,100, euclidean,0.073801793
+NMF_serial,50,100, euclidean,0.045923901
+NMF_sklearn,50,100, euclidean,0.04907403
+NMF_parallel,50,100, divergence,0.059594016
+NMF_serial,50,100, divergence,0.135127759
+NMF_sklearn,50,100, divergence,0.141110516
+NMF_parallel,50,1000, euclidean,0.149451683
+NMF_serial,50,1000, euclidean,0.555839443
+NMF_sklearn,50,1000, euclidean,0.581864905
+NMF_parallel,50,1000, divergence,0.121814685
+NMF_serial,50,1000, divergence,0.750932336
+NMF_sklearn,50,1000, divergence,0.56771102
+NMF_parallel,100,1, euclidean,0.076477763
+NMF_serial,100,1, euclidean,0.004086995
+NMF_sklearn,100,1, euclidean,0.001547956
+NMF_parallel,100,1, divergence,0.088652975
+NMF_serial,100,1, divergence,0.008722258
+NMF_sklearn,100,1, divergence,0.003485179
+NMF_parallel,100,10, euclidean,0.050789584
+NMF_serial,100,10, euclidean,0.008876467
+NMF_sklearn,100,10, euclidean,0.009947205
+NMF_parallel,100,10, divergence,0.054674326
+NMF_serial,100,10, divergence,0.010674071
+NMF_sklearn,100,10, divergence,0.01891017
+NMF_parallel,100,100, euclidean,0.078060281
+NMF_serial,100,100, euclidean,0.26735487
+NMF_sklearn,100,100, euclidean,0.212441254
+NMF_parallel,100,100, divergence,0.096351981
+NMF_serial,100,100, divergence,0.182259321
+NMF_sklearn,100,100, divergence,0.209632635
+NMF_parallel,100,1000, euclidean,0.219932388
+NMF_serial,100,1000, euclidean,1.144168878
+NMF_sklearn,100,1000, euclidean,1.152194762
+NMF_parallel,100,1000, divergence,0.139097488
+NMF_serial,100,1000, divergence,1.671267843
+NMF_sklearn,100,1000, divergence,1.515168977
+NMF_parallel,500,1, euclidean,0.106028909
+NMF_serial,500,1, euclidean,0.033011484
+NMF_sklearn,500,1, euclidean,0.004632139
+NMF_parallel,500,1, divergence,0.118210155
+NMF_serial,500,1, divergence,0.106191254
+NMF_sklearn,500,1, divergence,0.040238118
+NMF_parallel,500,10, euclidean,0.10555505
+NMF_serial,500,10, euclidean,0.085963893
+NMF_sklearn,500,10, euclidean,0.06734941
+NMF_parallel,500,10, divergence,0.120028663
+NMF_serial,500,10, divergence,0.149119377
+NMF_sklearn,500,10, divergence,0.261019397
+NMF_parallel,500,100, euclidean,0.15095508
+NMF_serial,500,100, euclidean,0.793411684
+NMF_sklearn,500,100, euclidean,0.474214959
+NMF_parallel,500,100, divergence,0.159875858
+NMF_serial,500,100, divergence,0.59734621
+NMF_sklearn,500,100, divergence,0.782243562
+NMF_parallel,500,1000, euclidean,0.652073944
+NMF_serial,500,1000, euclidean,36.36036527
+NMF_sklearn,500,1000, euclidean,25.81064346
+NMF_parallel,500,1000, divergence,0.436980951
+NMF_serial,500,1000, divergence,25.79015028
+NMF_sklearn,500,1000, divergence,26.22424033
+NMF_parallel,1000,1, euclidean,0.138136784
+NMF_serial,1000,1, euclidean,0.085123515
+NMF_sklearn,1000,1, euclidean,0.011341643
+NMF_parallel,1000,1, divergence,0.151436002
+NMF_serial,1000,1, divergence,0.363982201
+NMF_sklearn,1000,1, divergence,0.197055387
+NMF_parallel,1000,10, euclidean,0.143691661
+NMF_serial,1000,10, euclidean,0.294022894
+NMF_sklearn,1000,10, euclidean,0.197688961
+NMF_parallel,1000,10, divergence,0.164149362
+NMF_serial,1000,10, divergence,0.522626567
+NMF_sklearn,1000,10, divergence,0.921846914
+NMF_parallel,1000,100, euclidean,0.206535789
+NMF_serial,1000,100, euclidean,0.860449195
+NMF_sklearn,1000,100, euclidean,0.554666519
+NMF_parallel,1000,100, divergence,0.334869406
+NMF_serial,1000,100, divergence,1.032961392
+NMF_sklearn,1000,100, divergence,1.47795918
+NMF_parallel,1000,1000, euclidean,1.672859045
+NMF_serial,1000,1000, euclidean,126.5047616
+NMF_sklearn,1000,1000, euclidean,91.80213454
+NMF_parallel,1000,1000, divergence,1.190114624
+NMF_serial,1000,1000, divergence,47.70657263
+NMF_sklearn,1000,1000, divergence,52.04836407
+NMF_parallel,5000,1, euclidean,0.94635163
+NMF_serial,5000,1, euclidean,5.39797616
+NMF_sklearn,5000,1, euclidean,0.498785806
+NMF_parallel,5000,1, divergence,1.383390613
+NMF_serial,5000,1, divergence,23.42454422
+NMF_sklearn,5000,1, divergence,6.14117527
+NMF_parallel,5000,10, euclidean,0.972067291
+NMF_serial,5000,10, euclidean,10.30143516
+NMF_sklearn,5000,10, euclidean,5.514632797
+NMF_parallel,5000,10, divergence,1.410717688
+NMF_serial,5000,10, divergence,26.92521157
+NMF_sklearn,5000,10, divergence,38.34653156
+NMF_parallel,5000,100, euclidean,3.1512354
+NMF_serial,5000,100, euclidean,20.06878386
+NMF_sklearn,5000,100, euclidean,10.92336755
+NMF_parallel,5000,100, divergence,3.574148779
+NMF_serial,5000,100, divergence,36.60181463
+NMF_sklearn,5000,100, divergence,48.1401614
+NMF_parallel,5000,1000, euclidean,28.26629492
+NMF_serial,5000,1000, euclidean,142.1715302
+NMF_sklearn,5000,1000, euclidean,92.18601918
+NMF_parallel,5000,1000, divergence,26.85336289
+NMF_serial,5000,1000, divergence,148.0317919
+NMF_sklearn,5000,1000, divergence,163.3109382
+NMF_parallel,10000,1, euclidean,3.250833008
+NMF_serial,10000,1, euclidean,21.55693138
+NMF_sklearn,10000,1, euclidean,1.793971372
+NMF_parallel,10000,1, divergence,5.058975781
+NMF_serial,10000,1, divergence,82.16619663
+NMF_sklearn,10000,1, divergence,23.57875495
+NMF_parallel,10000,10, euclidean,3.3362073
+NMF_serial,10000,10, euclidean,40.71775494
+NMF_sklearn,10000,10, euclidean,4.109000134
+NMF_parallel,10000,10, divergence,5.129283057
+NMF_serial,10000,10, divergence,95.65252125
+NMF_sklearn,10000,10, divergence,27.05773396
