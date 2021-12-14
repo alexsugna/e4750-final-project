@@ -14,7 +14,7 @@ from .context import Context
 
 BLOCK_SIZE = 32
 
-def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time=True, print_iterations=True):
+def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time=True, print_iterations=True, calculate_loss=True, print_start=True):
     """
     Performs NumPy (serial) NMF.
 
@@ -32,6 +32,10 @@ def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time
         eps=1e-16 (float): small value epsilon added for numerical stability
 
         return_time=True (bool): return the execution time in s
+        
+        calculate_loss=True (bool): calculates loss at each iteration and returns list. 
+        
+        print_start=True (bool): print string indicating start of NMF
 
     returns:
         W (N, K): the factored matrix W
@@ -40,7 +44,8 @@ def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time
 
         losses (list): List of loss at each iteration
     """
-    print("Starting {} iterations of serial NMF with {} loss.".format(iterations, loss)) 
+    if print_start:
+        print("Starting {} iterations of serial NMF with {} loss.".format(iterations, loss)) 
     
     if return_time:
         start = time.time()
@@ -59,8 +64,9 @@ def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time
 
             Ht = H.T #H transpose
             W = W * X.dot(Ht) / (W.dot(H).dot(Ht) + eps) #update W
-
-            iter_loss = euclidean_loss_numpy(X, W, H)
+            
+            if calculate_loss:
+                iter_loss = euclidean_loss_numpy(X, W, H)
 
         elif loss == 'divergence':
 
@@ -72,13 +78,15 @@ def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time
             Ht = H.T
             Ht = Ht / Ht.sum(axis=0).reshape(1, -1) #normalize columns
             W = W * (P.dot(Ht))  #update W
-
-            iter_loss = divergence_loss_numpy(X, W, H, eps)
+            
+            if calculate_loss:
+                iter_loss = divergence_loss_numpy(X, W, H, eps)
 
         else:
             raise Exception('Loss function "{}" not supported.'.format(loss))
-
-        losses.append(iter_loss)
+            
+        if calculate_loss:
+            losses.append(iter_loss)
 
     if return_time:
         end = time.time()
@@ -87,7 +95,8 @@ def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time
     return W, H, losses
 
 
-def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time=True, print_iterations=True):
+def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time=True, print_iterations=True,
+                 print_start=True):
     """
     Performs CUDA (parallel) NMF.
 
@@ -105,6 +114,8 @@ def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_ti
         eps=1e-16 (float): small value epsilon added for numerical stability
 
         return_time=True (bool): return the execution time in s
+        
+        print_start=True (bool): print string indicating start of NMF
 
     returns:
         W (N, K): the factored matrix W
@@ -113,7 +124,9 @@ def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_ti
 
         squared_out (list): List of loss at each iteration
     """
-    print("Starting {} iterations of parallel NMF with {} multiplicative updates.".format(iterations, loss)) 
+    if print_start:
+        print("Starting {} iterations of parallel NMF with {} multiplicative updates.".format(iterations, loss)) 
+        
     context = Context(BLOCK_SIZE) # define context
 
     # define kernel paths
@@ -395,7 +408,7 @@ def NMF_parallel(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_ti
     return W, H
 
 
-def NMF_sklearn(X, W, H, iterations=100, loss='euclidean', return_time=True):
+def NMF_sklearn(X, W, H, iterations=100, loss='euclidean', return_time=True, print_start=True):
     """
     A wrapper function for sklearn.decomposition.NMF. The purpose of this function is to 
     match to function call signature of NMF_serial() and NMF_parallel() above to simplify
@@ -413,13 +426,16 @@ def NMF_sklearn(X, W, H, iterations=100, loss='euclidean', return_time=True):
         loss='euclidean' (string): one of ['euclidean', 'divergence'] to specify the loss function/update scheme
 
         return_time=True (bool): return the execution time in s
+        
+        print_start=True (bool): print string indicating start of NMF
 
     returns:
         W (N, K): the factored matrix W
 
         H (K, M): the factored matrix H
     """
-    print("Starting {} iterations of Scikit-learn NMF with {} loss.".format(iterations, loss)) 
+    if print_start:
+        print("Starting {} iterations of Scikit-learn NMF with {} loss.".format(iterations, loss)) 
     
     K = W.shape[1] # get num_topics
     
