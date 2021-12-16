@@ -1,4 +1,4 @@
-//column wise sum operation
+// column wise sum operation
 
 __global__ void column_sum(float* A,  float* result, int height, int width){
 
@@ -14,6 +14,7 @@ __global__ void column_sum(float* A,  float* result, int height, int width){
     }
 }
 
+// row wise sum operation
 __global__ void row_sum(float* A, float* result, int height, int width){
 
     int idy = threadIdx.y + blockDim.y*blockIdx.y;
