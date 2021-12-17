@@ -56,14 +56,14 @@ def NMF_serial(X, W, H, iterations=100, loss='euclidean', eps=1e-16, return_time
         if i % 10 == 0 and print_iterations:
             print('Iteration: %d' % i)
 
-        #objective function
+        # objective function
         if loss == 'euclidean':
 
-            Wt = W.T #w transpose
-            H = H * Wt.dot(X) / (Wt.dot(W).dot(H) + eps) #update H
+            Wt = W.T # W transpose
+            H = H * Wt.dot(X) / (Wt.dot(W).dot(H) + eps) # update H
 
-            Ht = H.T #H transpose
-            W = W * X.dot(Ht) / (W.dot(H).dot(Ht) + eps) #update W
+            Ht = H.T # H transpose
+            W = W * X.dot(Ht) / (W.dot(H).dot(Ht) + eps) # update W
             
             if calculate_loss:
                 iter_loss = euclidean_loss_numpy(X, W, H)
