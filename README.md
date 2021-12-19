@@ -2,6 +2,8 @@
 # e4750_2021Fall-Project-SSAA-ala2197-sls2305
 Implementing Parallel Non-Negative Matrix Factorization
 
+<img width="909" alt="Screen Shot 2021-12-19 at 5 23 39 PM" src="https://user-images.githubusercontent.com/50375261/146692944-891bd196-1524-46a3-9f33-d70461856329.png">
+
 Non-Negative matrix factorization (NMF) is an unsupervised machine learning technique often used in recommendation systems.
 
 In this project we investigate and compare various serial and parallel implementations of NMF. See `E4750_2021Fall_SSAA_sls2305_ala2197.report` for a detailed report of the project. 
