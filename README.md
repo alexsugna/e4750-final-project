@@ -6,7 +6,7 @@ Implementing Parallel Non-Negative Matrix Factorization
 
 Non-Negative matrix factorization (NMF) is an unsupervised machine learning technique often used in recommendation systems.
 
-In this project we investigate and compare various serial and parallel implementations of NMF. See `E4750_2021Fall_SSAA_sls2305_ala2197.report` for a detailed report of the project. 
+In this project we investigate and compare various serial and parallel implementations of NMF. See `E4750_2021Fall_SSAA_sls2305_ala2197.report.pdf` for a detailed report of the project. 
 
 ### Repository Index
 
